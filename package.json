@@ -1,0 +1,19 @@
+{
+  "name": "state-of-diagnostic-tools-talk",
+  "version": "1.0.0",
+  "description": "",
+  "main": "console-log.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "chalk": "^2.4.1",
+    "dprof": "^1.0.1",
+    "express": "^4.16.3",
+    "pino": "^4.17.3",
+    "stack-chain": "^2.0.0",
+    "treeify": "^1.1.0"
+  }
+}
