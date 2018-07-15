@@ -19,16 +19,16 @@ RUN set -ex && \
       gdb \
     ' && \
     tmuxConfig=' \
-      set-option -g default-shell /bin/zsh \
-      set -g mouse \
+      set-option -g default-shell /bin/zsh \n\
+      set -g mouse \n\
     ' && \
-    vimConfig='
-      set background=dark \
-      set number \
-      set ts=2 \
-      set sw=2 \
-      set expandtab \
-      set nowrap \
+    vimConfig=' \
+      set background=dark \n\
+      set number \n\
+      set ts=2 \n\
+      set sw=2 \n\
+      set expandtab \n\
+      set nowrap \n\
     ' && \
     apt-get update && \
     apt-get install -y $runtimeDeps $buildDeps && \
