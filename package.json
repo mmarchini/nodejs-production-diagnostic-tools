@@ -12,11 +12,17 @@
     "chalk": "^2.4.1",
     "dprof": "^1.0.1",
     "express": "^4.16.3",
+    "fastify": "^1.8.0",
     "heap-profile": "^0.3.1",
+    "inquirer": "^6.0.0",
     "llnode": "^1.7.1",
+    "node-fetch": "^2.1.2",
     "node-report": "^2.2.1",
     "pino": "^4.17.3",
+    "request": "^2.87.0",
+    "request-promise-native": "^1.0.5",
     "stack-chain": "^2.0.0",
-    "treeify": "^1.1.0"
+    "treeify": "^1.1.0",
+    "vtop": "^0.6.0"
   }
 }

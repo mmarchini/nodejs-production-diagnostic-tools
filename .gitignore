@@ -82,3 +82,4 @@ node-report.*.txt
 core
 core.*
 perf.data
+.vscode

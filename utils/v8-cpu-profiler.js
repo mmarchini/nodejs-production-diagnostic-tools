@@ -3,16 +3,17 @@
 const inspector = require('inspector');
 const fs = require('fs');
 const session = new inspector.Session();
+session.connect();
 
 function startProfiling() {
-  session.connect();
   session.post('Profiler.enable', () => { session.post('Profiler.start'); });
 }
 
-function stopProfiling(path='./', filename='profile.cpuprofile') {
+function stopProfiling(filename) {
+  filename = filename || `cpu-profile-${Date.now()}.cpuprofile`;
   session.post('Profiler.stop', (err, { profile }) => {
     if (!err) {
-      fs.writeFileSync(`${path}${filename}`, JSON.stringify(profile));
+      fs.writeFileSync(filename, JSON.stringify(profile));
     }
   });
 }

@@ -18,7 +18,7 @@ function functionTwo(x, y) {
 }
 
 function run() {
-  for (let i = 0; i < 1000; i++) {
+  for (let i = 0; i < 2000; i++) {
     functionOne(i);
   }
 }
