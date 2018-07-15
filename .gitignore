@@ -75,3 +75,10 @@ typings/
 *.tmp
 *.result
 *.log
+*.perf
+*.heapprofile
+*.cpuprofile
+node-report.*.txt
+core
+core.*
+perf.data

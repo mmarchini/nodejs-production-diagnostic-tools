@@ -6,7 +6,6 @@ const asyncStacks = new Map();
 
 const hooks = {
   init: (asyncId, type, triggerAsyncId, resource) => {
-    console.log(chain.callSite());
     if (!asyncStacks[triggerAsyncId]) {
       asyncStacks[triggerAsyncId] = {
         asyncId: triggerAsyncId,
