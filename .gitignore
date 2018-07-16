@@ -83,3 +83,4 @@ core
 core.*
 perf.data
 .vscode
+.DS_Store
