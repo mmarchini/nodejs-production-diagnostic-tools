@@ -26,4 +26,4 @@ app.get('/healthy/', function (req, res) {
   res.send({});
 });
 
-app.listen(3000, () => { console.log('Running server on localhost:3000'); });
+app.listen(3000, (err, address) => { pino.info({address: address, status: 'running'}); });

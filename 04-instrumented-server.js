@@ -41,4 +41,4 @@ app.addHook('onSend', async function onSend(request, reply, payload) {
   cpuProfiler.stopProfiling(`./out/${route}-${request.id}.cpuprofile`);
 });
 
-app.listen(3000, () => { });
+app.listen(3000, (err, address) => { pino.info({address: address, status: 'running'}); });

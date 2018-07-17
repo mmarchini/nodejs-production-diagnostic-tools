@@ -27,4 +27,4 @@ app.get('/healthy/', function (req, res) {
 app.addHook('onRequest', async (req, res) => { pino.info(req); });
 app.addHook('onResponse', async (res) => { pino.info(res); });
 
-app.listen(3000, () => { console.log('Running server on localhost:3000'); });
+app.listen(3000, (err, address) => { pino.info({address: address, status: 'running'}); });
