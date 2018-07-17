@@ -31,14 +31,14 @@ app.get('/healthy/', function (req, res) {
 app.addHook('preHandler', async function preHandler(request, reply) {
   const route = request.req.url.replace(new RegExp(/\//, 'g'), "");
   cpuProfiler.startProfiling();
-  heapProfiler.write(`${route}-${request.id}-before.heapprofile`);
+  heapProfiler.write(`./out/${route}-${request.id}-before.heapprofile`);
   pino.info(request.req);
 });
 app.addHook('onSend', async function onSend(request, reply, payload) {
   const route = request.req.url.replace(new RegExp(/\//, 'g'), "");
   pino.info(reply.res);
-  heapProfiler.write(`${route}-${request.id}-after.heapprofile`);
-  cpuProfiler.stopProfiling(`${route}-${request.id}.cpuprofile`);
+  heapProfiler.write(`./out/${route}-${request.id}-after.heapprofile`);
+  cpuProfiler.stopProfiling(`./out/${route}-${request.id}.cpuprofile`);
 });
 
 app.listen(3000, () => { });

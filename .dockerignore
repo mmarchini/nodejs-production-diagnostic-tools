@@ -11,3 +11,4 @@ core.*
 perf.data
 .git
 .vscode
+out/

@@ -12,7 +12,7 @@ class InstrumentationMiddleware {
       if (this.isCpuProfiling(request.req.url))
         cpuProfiler.startProfiling();
       if (this.isMemoryProfiling(request.req.url))
-        heapProfiler.write(`${route}-${request.id}-before.heapprofile`);
+        heapProfiler.write(`./out/${route}-${request.id}-before.heapprofile`);
       if (this.isLogging(request.req.url))
         pino.info(request.req);
     });
@@ -21,9 +21,9 @@ class InstrumentationMiddleware {
       if (this.isLogging(request.req.url))
         pino.info(reply.res);
       if (this.isMemoryProfiling(request.req.url))
-        heapProfiler.write(`${route}-${request.id}-after.heapprofile`);
+        heapProfiler.write(`./out/${route}-${request.id}-after.heapprofile`);
       if (this.isCpuProfiling(request.req.url))
-        cpuProfiler.stopProfiling(`${route}-${request.id}.cpuprofile`);
+        cpuProfiler.stopProfiling(`./out/${route}-${request.id}.cpuprofile`);
     });
     this.app.addHook('onRoute', (routeOptions) => {
       if (routeOptions.url in this.routes) return;

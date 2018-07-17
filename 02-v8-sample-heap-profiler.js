@@ -13,7 +13,7 @@ const memoryLeaker = require('./utils/memory-leaker');
 app.get('/leaker/', function leakerHandler(req, res) {
   memoryLeaker.run();
   res.send({});
-  heapProfiler.write();
+  heapProfiler.write(`./out/leaker-${req.id}.heapprofile`);
 });
 
 const crasher = require('./utils/crasher');

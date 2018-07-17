@@ -7,7 +7,7 @@ app.get('/slow/', function slowHandler(req, res) {
   cpuProfiler.startProfiling();
   heavyComputation.run();
   res.send({});
-  cpuProfiler.stopProfiling();
+  cpuProfiler.stopProfiling(`./out/slow-${req.id}.cpuprofile`);
 });
 
 const memoryLeaker = require('./utils/memory-leaker');
