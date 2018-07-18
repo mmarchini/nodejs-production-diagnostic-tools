@@ -3,6 +3,7 @@
 const pino = require('pino')();
 const cpuProfiler = require('./v8-cpu-profiler');
 const heapProfiler = require('heap-profile');
+heapProfiler.start();
 
 class InstrumentationMiddleware {
   constructor(app) {

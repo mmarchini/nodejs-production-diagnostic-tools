@@ -3,6 +3,7 @@
 const app = require('fastify')();
 const { InstrumentationMiddleware } = require('./utils/instrumentation-middleware');
 const instrumentation = new InstrumentationMiddleware(app);
+const pino = require('pino')();
 
 const heavyComputation = require('./utils/heavy-computation');
 app.get('/slow/', function slowHandler(req, res) {
