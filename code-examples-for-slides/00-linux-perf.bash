@@ -6,6 +6,6 @@ $ node --perf-basic-prof \
 
 # Sample our server for 10 seconds
 # at a frequency of 99Hz
-$ perf -F99 -g -p $(pgrep -x -n node) -- \
+$ perf record -F99 -g -p $(pgrep -x -n node) -- \
   sleep 10
 $ perf script > result.perf

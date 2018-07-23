@@ -23,20 +23,7 @@ accessible from inside the container and from the host machine.
 
 The examples below assume you're using the setup described above.
 
-### 00 - The problem
-
-```
-node 00-defectuous-server.js
-```
-
-```
-curl localhost:3000/healthy/
-sleep 3 && time curl localhost:3000/slow/
-sleep 3 && repeat 100 curl localhost:3000/leaker/
-curl localhost:3000/crash/
-```
-
-### 01 - Linux `perf`
+### Linux `perf`
 
 ```
 node --perf-basic-prof --interpreted-frames-native-stack \
@@ -57,7 +44,7 @@ Result:
 
 ![flamegraph example](/assets/flamegraph.svg "Flamegraph Example")
 
-### 02 - V8 CpuProfiler
+### V8 CpuProfiler
 
 ```
 node --no-turbo-inlining 01-v8-cpu-profiler.js
@@ -67,7 +54,22 @@ Result:
 
 ![v8 cpu profile example](/assets/cpuprofile.png "V8 CpuProfiler Example")
 
-### 03 - llnode (Memory Analysis)
+### V8 SamplingHeapProfiler
+
+```
+node --no-turbo-inlining 01-sample-heap-profiler.js
+```
+
+```
+repeat 10 curl localhost:3000/leaker/
+```
+
+Result:
+
+![v8 sampling heap profiler example](/assets/heapprofile.png "V8 Sampling Heap Profiler Example")
+
+
+### llnode
 
 ```
 node 00-defectuous-server.js
@@ -85,19 +87,9 @@ Result:
 
 ![llnode second example](/assets/llnode2.png)
 
-### 04 - V8 SamplingHeapProfiler
+![llnode third example](/assets/llnode3.png)
 
-```
-node --no-turbo-inlining 01-sample-heap-profiler.js
-```
-
-```
-repeat 10 curl localhost:3000/leaker/
-```
-
-Result:
-
-![v8 sampling heap profiler example](/assets/heapprofile.png "V8 Sampling Heap Profiler Example")
+![llnode fourth example](/assets/llnode4.png)
 
 ### 05 - `node-report`
 
@@ -280,21 +272,6 @@ Loaded libraries
 ================================================================================
 ```
 
-### 06 - `llnode` (Crash Analysis)
-
-```
-ulimit -c unlimited
-node --abort-on-uncaught-exception 00-defectuous-server.js
-npx llnode node -c core
-```
-
-```
-curl localhost:3000/crash/
-```
-
-![llnode third example](/assets/llnode3.png)
-
-![llnode fourth example](/assets/llnode4.png)
 
 ### 07 - Structured Logs with `pino`
 
@@ -334,4 +311,8 @@ node 04-instrumented-server.js
 
 ```
 node 05-configurable-instrumentation.js
+```
+
+```
+node tools/instrumentation-panel.js
 ```
