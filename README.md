@@ -1,8 +1,10 @@
 # State of Diagnostic Tools for Production Environment in the Node.js Ecosystem
 
+A curated list of diagnostic tools suited for Node.js production environments, with code examples.
+
 ## Examples
 
-All examples are available as a Docker image. You can get it by running:
+All examples and tools can be used through a Docker container. You can get the image by running:
 
 ```bash
 docker pull mmarchini/nodejs-production-diagnostic-tools:latest
@@ -19,55 +21,99 @@ docker run -it --privileged \
 
 This will create a directory `out` in the current directory, which will be
 accessible from inside the container and from the host machine.
-`--privileged` is required, otherwise Linux perf won't work.
+`--privileged` is required, otherwise Linux perf won't work correctly.
 
 The examples below assume you're using the setup described above.
 
 ### Linux `perf`
+
+Linux perf is a system profiler tool which can be used to generate FlameGraphs in a performant way. It can be used to profile multiple languages (usually static compiled languages).
+
+Node.js provides flags to expose V8 compiler information required by Linux perf to translate memory addresses into function names:
 
 ```
 node --perf-basic-prof --interpreted-frames-native-stack \
      --no-turbo-inlining 00-defectuous-server.js
 ```
 
+`--no-turbo-inlining` is not required, but will make the FlameGraph more precise. It might have some performance overhead though.
+
+> `--interpreted-frames-native-stack` is available in v10.4.0 and later. Previous versions (expect v6.x release line) might have some missing frames on the flamegraph due to V8 interpreter execution
+
+To sample the CPU, use:
+
 ```
-perf -F99 -a -g -p $(pgrep -x -n node) -- sleep 10
-perf script > result.perf
-./tools/FlameGraph/stackcollapse-perf.pl result.perf | ./tools/FlameGraph/flamegraph.pl --color=js > flamegraph.svg
+perf record -F99 -a -g -p $(pgrep -x -n node) -- sleep 10
 ```
+
+While sampling, use curl to make a request to a slow endpoint:
 
 ```
 time curl localhost:3000/slow/
 ```
 
-Result:
+Once perf finishes running, you can generate a flamegraph:
+
+```
+perf script > result.perf
+./tools/FlameGraph/stackcollapse-perf.pl result.perf | ./tools/FlameGraph/flamegraph.pl --color=js > ./out/flamegraph.svg
+```
+
+#### Result
 
 ![flamegraph example](/assets/flamegraph.svg "Flamegraph Example")
 
+#### Resources
+
+   - http://www.brendangregg.com/blog/2014-09-17/node-flame-graphs-on-linux.html
+
 ### V8 CpuProfiler
+
+This tool is similar to Linux perf, but has the advantage of being platform independent and there’s no need to install external tools. On the other hand it will only sample JavaScript function calls, so if you need to know how the boundaries between js and C++ are performing, go with Linux perf. V8 CpuProfiler is suited for serverless platforms as well.
+
+You’ll need to change your code to use V8 CpuProfiler. utils/v8-cpu-profiler.js shows you to use it.
+
+You can run an example of this tool with the following command:
 
 ```
 node --no-turbo-inlining 01-v8-cpu-profiler.js
 ```
 
-Result:
+Make a request to the slow endpoint with curl:
+
+```
+time curl localhost:3000/slow/
+```
+
+This will generate a .cpuprofile file in the out folder which you can open with Chrome DevTools, in the Performance tab.
+
+#### Result
 
 ![v8 cpu profile example](/assets/cpuprofile.png "V8 CpuProfiler Example")
 
 ### V8 SamplingHeapProfiler
 
+Similar to V8 CpuProfiler, but instead of sampling time spent in each function, it will sample memory allocated per function call. 
+
 ```
-node --no-turbo-inlining 01-sample-heap-profiler.js
+node --no-turbo-inlining 02-sample-heap-profiler.js
 ```
+
+Make a request to the leaker endpoint with curl:
 
 ```
 repeat 10 curl localhost:3000/leaker/
 ```
 
-Result:
+This will generate a .heapprofile file in the out folder which you can open with Chrome DevTools, in the Memory tab.
+
+#### Result
 
 ![v8 sampling heap profiler example](/assets/heapprofile.png "V8 Sampling Heap Profiler Example")
 
+#### Resources 
+
+  - https://github.com/v8/sampling-heap-profiler
 
 ### llnode
 
@@ -81,7 +127,7 @@ gcore $(pgrep -x -n node)
 npx llnode node -c core.$(pgrep -x -n node)
 ```
 
-Result:
+#### Results
 
 ![llnode first example](/assets/llnode1.png)
 
@@ -91,7 +137,12 @@ Result:
 
 ![llnode fourth example](/assets/llnode4.png)
 
-### 05 - `node-report`
+#### Resources
+
+  - https://github.com/nodejs/llnode
+  - https://medium.com/sthima-insights/taming-the-dragon-using-llnode-to-debug-your-node-js-application-fc54c6efd0f1
+
+### `node-report`
 
 ```
 node --require node-report 00-defectuous-server.js
@@ -101,7 +152,7 @@ node --require node-report 00-defectuous-server.js
 curl localhost:3000/crash/
 ```
 
-Result:
+#### Result
 
 ```
 ================================================================================
@@ -272,8 +323,11 @@ Loaded libraries
 ================================================================================
 ```
 
+#### Resources
 
-### 07 - Structured Logs with `pino`
+  - https://github.com/nodejs/node-report
+
+### Structured Logs with `pino`
 
 ```
 node 03-structured-logs.js
@@ -286,7 +340,7 @@ sleep 3 && repeat 100 curl localhost:3000/leaker/
 curl localhost:3000/crash/
 ```
 
-Result:
+#### Result
 
 ```
 {"level":30,"time":1531772226337,"pid":417,"hostname":"17de814eee9c","req":{"id":1,"method":"GET","url":"/healthy/","headers":{"host":"localhost:3000","user-agent":"curl/7.52.1","accept":"*/*"},"remoteAddress":"127.0.0.1","remotePort":58466},"v":1}
@@ -301,13 +355,17 @@ Result:
 {"level":30,"time":1531772226418,"pid":417,"hostname":"17de814eee9c","res":{"statusCode":200,"header":"HTTP/1.1 200 OK\r\ncontent-type: application/json; charset=utf-8\r\ncontent-length: 2\r\nDate: Mon, 16 Jul 2018 20:17:06 GMT\r\nConnection: keep-alive\r\n\r\n"},"v":1}
 ```
 
-### 08 - Combining all tools on every request
+#### References
+
+  - https://github.com/pinojs/pino
+
+### Combining all tools on every request
 
 ```
 node 04-instrumented-server.js
 ```
 
-### 09 - Make all tools available, enable when necessary
+### Make all tools available, enable when necessary
 
 ```
 node 05-configurable-instrumentation.js
